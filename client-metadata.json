@@ -1,5 +1,5 @@
 {
-  "client_id": "https://Zomega.github.io/atproto-sandbox/client-metadata.json",
+  "client_id": "https://zomega.github.io/atproto-sandbox/client-metadata.json",
   "client_name": "ATProto Wordle Clone",
   "client_uri": "https://codepen.io/Zomega/pen/zxBazQd",
   "redirect_uris": ["https://codepen.io/Zomega/pen/zxBazQd"],
