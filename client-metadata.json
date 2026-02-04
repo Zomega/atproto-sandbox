@@ -3,7 +3,7 @@
   "client_name": "ATProto Wordle Clone",
   "client_uri": "https://zomega.github.io/atproto-sandbox/",
   "redirect_uris": ["https://zomega.github.io/atproto-sandbox/auth_callback.html"],
-  "scope": "atproto transition:generic",
+  "scope": "atproto",
   "grant_types": ["authorization_code", "refresh_token"],
   "response_types": ["code"],
   "application_type": "web",
