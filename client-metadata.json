@@ -1,8 +1,8 @@
 {
   "client_id": "https://zomega.github.io/atproto-sandbox/client-metadata.json",
   "client_name": "ATProto Wordle Clone",
-  "client_uri": "https://codepen.io/Zomega/pen/zxBazQd",
-  "redirect_uris": ["https://codepen.io/Zomega/pen/zxBazQd"],
+  "client_uri": "https://zomega.github.io/atproto-sandbox/",
+  "redirect_uris": ["https://zomega.github.io/atproto-sandbox/auth_callback.html"],
   "scope": "atproto transition:generic",
   "grant_types": ["authorization_code", "refresh_token"],
   "response_types": ["code"],
