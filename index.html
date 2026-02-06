@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATProto Wordle</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="card">
+    <h2>Under Construction</h2>
+    <p>This is my attempt to dip my toes into the ATProto world, by trying to recreate old Wordle with scores and streaks within that framework.</p>
+</div>
+
+<div id="app" class="card">
+    <div id="login-section">
+        <h2>ATProto Wordle</h2>
+        <p id="status">Ready to initialize...</p>
+        <input type="text" id="handle" placeholder="alice.bsky.social" />
+        <button id="login-btn">Login with ATProto</button>
+    </div>
+
+    <div id="game-section" style="display:none;">
+        <h2>Welcome Back!</h2>
+        <p id="user-info"></p>
+        <div id="wordle-ui">
+            <button id="save-score-btn">Simulate Save Score</button>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="script.js"></script>
+
+</body>
+</html>
