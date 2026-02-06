@@ -70,18 +70,32 @@ async function findWordlePosts() {
 }
 
 async function setupGameUI(oauthSession) {
-    // 1. Create the agent using the specialized agent creator from the session
-    // This ensures the agent uses the correct DPoP headers automatically
-    agent = new BskyAgent(oauthSession);
-    
-    // 2. Toggle UI
-    document.getElementById("login-section").style.display = "none";
-    document.getElementById("game-section").style.display = "block";
-    document.getElementById("user-info").innerText = "Fetching your profile...";
+    console.log("Setting up Agent with session:", oauthSession);
 
-    // 3. Call your read functions
-    await fetchMyProfile();
-    findWordlePosts();
+    try {
+        // 1. Explicitly get the service URL from the session
+        // Some PDSs use 'pds', some use 'service' in the session object
+        const serviceUrl = oauthSession.pds || "https://bsky.social";
+
+        // 2. Initialize the agent with the string URL
+        agent = new BskyAgent({ service: serviceUrl });
+        
+        // 3. Manually attach the session data to the agent
+        // This avoids the 'resumeSession' check but gives the agent the tokens it needs
+        agent.session = oauthSession;
+
+        // 4. Toggle UI
+        document.getElementById("login-section").style.display = "none";
+        document.getElementById("game-section").style.display = "block";
+        document.getElementById("user-info").innerText = "Fetching your profile...";
+
+        // 5. Run your data calls
+        await fetchMyProfile();
+        
+    } catch (err) {
+        console.error("Agent setup failed:", err);
+        document.getElementById("status").innerText = "Agent Error: " + err.message;
+    }
 }
 
 async function login() {
