@@ -5,7 +5,7 @@
   "redirect_uris": [
     "https://zomega.github.io/atproto-sandbox/"
   ],
-  "scope": "atproto",
+  "scope": "atproto transition:generic",
   "grant_types": ["authorization_code", "refresh_token"],
   "response_types": ["code"],
   "application_type": "web",
