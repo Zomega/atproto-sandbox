@@ -65,24 +65,29 @@ async function fetchMyProfile(did) {
     try {
         console.log("Fetching profile for:", did);
         
-        // We use the agent to make the authenticated call
         const response = await agent.getProfile({ actor: did });
         const profile = response.data;
 
         console.log("Profile fetched:", profile);
 
+        // FIX: Handle missing avatar and display name
+        // If profile.avatar is undefined, use a generic placeholder
+        const avatarUrl = profile.avatar || "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png";
+        
+        // Some users might not have a display name set either
+        const name = profile.displayName || profile.handle;
+
         document.getElementById("user-info").innerHTML = `
             <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
-                <img src="${profile.avatar}" style="width:50px; height:50px; border-radius:50%; border: 2px solid var(--accent-color);">
+                <img src="${avatarUrl}" style="width:50px; height:50px; border-radius:50%; border: 2px solid var(--accent-color); object-fit: cover;">
                 <div style="text-align: left;">
-                    <div style="font-weight: bold;">${profile.displayName || profile.handle}</div>
+                    <div style="font-weight: bold;">${name}</div>
                     <div style="font-size: 0.8em; opacity: 0.8;">@${profile.handle}</div>
                 </div>
             </div>
         `;
     } catch (err) {
         console.error("Failed to fetch profile:", err);
-        // This gives us the exact error from the server (e.g. 401, 403)
         document.getElementById("user-info").innerText = "Error: " + err.message;
     }
 }
