@@ -93,7 +93,8 @@ async function login() {
 
     try {
         const { url } = await client.signIn(handle, {
-            scope: "atproto",
+            // TODO: Load this from the metadata.
+            scope: "atproto transition:generic",
             ui_locales: 'en',
         });
         window.location.href = url;
