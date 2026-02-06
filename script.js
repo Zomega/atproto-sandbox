@@ -37,20 +37,57 @@ async function init() {
     }
 }
 
-function setupGameUI(session) {
+async function fetchMyProfile() {
+    try {
+        // 'getProfile' is the standard way to get user details
+        const response = await agent.getProfile({ actor: agent.session.did });
+        const profile = response.data;
+
+        console.log("Profile fetched:", profile);
+
+        // Update the UI with your actual display name and avatar
+        document.getElementById("user-info").innerHTML = `
+            <img src="${profile.avatar}" style="width:50px; border-radius:50%; vertical-align:middle; margin-right:10px;">
+            <strong>${profile.displayName || profile.handle}</strong>
+        `;
+    } catch (err) {
+        console.error("Failed to fetch profile:", err);
+    }
+}
+
+async function findWordlePosts() {
+    try {
+        // Search for the classic Wordle grid pattern
+        const response = await agent.app.bsky.feed.searchPosts({
+            q: "Wordle 🟩",
+            limit: 5
+        });
+
+        console.log("Recent Wordle posts:", response.data.posts);
+    } catch (err) {
+        console.error("Search failed:", err);
+    }
+}
+
+async function setupGameUI(session) {
+    // 1. Initialize the agent
     agent = new BskyAgent({
         service: session.pds || "https://bsky.social" 
     });
     
-    // 2. Resume the session so the agent is authenticated
-    agent.resumeSession(session);
+    // 2. Resume the session
+    await agent.resumeSession(session);
     
-    // Toggle Sections
+    // 3. Toggle the UI sections immediately so the user sees progress
     document.getElementById("login-section").style.display = "none";
     document.getElementById("game-section").style.display = "block";
+    document.getElementById("user-info").innerText = "Loading profile...";
+
+    // 4. Fetch your personalized data
+    await fetchMyProfile();
     
-    document.getElementById("user-info").innerText = `Logged in as: ${session.did}`;
-    console.log("Agent ready and session resumed.");
+    // Optional: Search for other Wordle players to show in the console
+    findWordlePosts();
 }
 
 async function login() {
