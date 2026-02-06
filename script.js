@@ -38,14 +38,19 @@ async function init() {
 }
 
 function setupGameUI(session) {
-    agent = new BskyAgent(session);
+    agent = new BskyAgent({
+        service: session.pds || "https://bsky.social" 
+    });
+    
+    // 2. Resume the session so the agent is authenticated
+    agent.resumeSession(session);
     
     // Toggle Sections
     document.getElementById("login-section").style.display = "none";
     document.getElementById("game-section").style.display = "block";
     
     document.getElementById("user-info").innerText = `Logged in as: ${session.did}`;
-    console.log("Session active:", session);
+    console.log("Agent ready and session resumed.");
 }
 
 async function login() {
