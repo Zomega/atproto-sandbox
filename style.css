@@ -1,0 +1,151 @@
+:root {
+  --accent-color: #0366d6;
+  --third-color: hotpink;
+
+  /*TODO: Unify backgrounds.*/
+  --page-background: #f4f4f9;
+  --card-background: white;
+  --subcard-background: var(--page-background);
+
+  --card-border: #e1e4e8;
+  --shadow: var(--card-border);
+
+  --text-color: #24292e;
+  --footer-color: #586069;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --accent-color: #58a6ff;
+    --third-color: #79c0ff;
+
+    /*TODO: Unify backgrounds.*/
+    --page-background: #0d1117;
+    --card-background: #161b22;
+    --subcard-background: #0d1117;
+
+    --card-border: #30363d;
+    --shadow: black;
+
+    --text-color: #c9d1d9;
+    --footer-color: #8b949e;
+  }
+}
+
+body {
+  font-family: sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  background: var(--page-background);
+  color: var(--text-color);
+}
+
+a:link,
+a:visited {
+  color: var(--accent-color);
+}
+
+a:hover,
+a:active {
+  color: var(--third-color);
+}
+
+.card {
+  width: 60%;
+}
+
+.card {
+  margin: 10px auto;
+  padding: 20px;
+
+  line-height: 1.6;
+  font-size: 1.1rem;
+  text-align: center;
+
+  background: var(--card-background);
+  border-radius: 12px;
+  border: 1px solid var(--card-border);
+  box-shadow: 0 4px 6px var(--shadow);
+}
+
+.hash {
+  font-family: monospace;
+  font-size: 0.9em;
+
+  color: var(--accent-color);
+  background: var(--subcard-background);
+
+  word-break: break-all;
+  display: inline-block;
+
+  margin: 10px 0;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.footer {
+  color: var(--footer-color);
+  font-size: 0.9rem;
+  margin-top: 10px;
+}
+
+.card h2 {
+  margin-top: 0;
+  color: var(--accent-color);
+  font-size: 1.5rem;
+  border-bottom: 2px solid var(--accent-color);
+  padding-bottom: 10px;
+}
+
+.card h3 {
+  margin-top: 0;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.subcard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.subcard {
+  background: var(--subcard-background);
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid var(--accent-color);
+}
+
+.subcard ul {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.subcard li {
+  margin-bottom: 8px;
+}
+
+.subcard.wide {
+  grid-column: span 2;
+}
+
+strong {
+  color: var(--accent-color);
+}
+
+@media (max-width: 600px) {
+  .subcard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .subcard.wide {
+    grid-column: span 1;
+  }
+
+  .card {
+    width: calc(100% - 60px);
+  }
+}
