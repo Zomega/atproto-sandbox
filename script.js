@@ -69,24 +69,18 @@ async function findWordlePosts() {
     }
 }
 
-async function setupGameUI(session) {
-    // 1. Initialize the agent
-    agent = new BskyAgent({
-        service: session.pds || "https://bsky.social" 
-    });
+async function setupGameUI(oauthSession) {
+    // 1. Create the agent using the specialized agent creator from the session
+    // This ensures the agent uses the correct DPoP headers automatically
+    agent = new BskyAgent(oauthSession);
     
-    // 2. Resume the session
-    await agent.resumeSession(session);
-    
-    // 3. Toggle the UI sections immediately so the user sees progress
+    // 2. Toggle UI
     document.getElementById("login-section").style.display = "none";
     document.getElementById("game-section").style.display = "block";
-    document.getElementById("user-info").innerText = "Loading profile...";
+    document.getElementById("user-info").innerText = "Fetching your profile...";
 
-    // 4. Fetch your personalized data
+    // 3. Call your read functions
     await fetchMyProfile();
-    
-    // Optional: Search for other Wordle players to show in the console
     findWordlePosts();
 }
 
