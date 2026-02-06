@@ -20,6 +20,9 @@ async function init() {
             clientMetadata: metadata 
         });
 
+        window.client = client; 
+        console.log("🛠️ window.client is ready");
+
         // This handles the redirect return automatically
         const result = await client.init();
 
@@ -36,11 +39,17 @@ async function init() {
 }
 
 async function setupGameUI(oauthSession) {
+    window.oauthSession = oauthSession;
+    console.log("🛠️ window.oauthSession is ready");
+
     console.log("Initializing Agent with valid session...");
 
     // 1. The Correct Way to Init:
     // The Agent constructor in 0.18+ is smart enough to take the OAuth session directly.
     agent = new Agent(oauthSession);
+
+    window.agent = agent;
+    console.log("🛠️ window.agent is ready");
 
     // Toggle UI
     document.getElementById("login-section").style.display = "none";
