@@ -70,32 +70,35 @@ async function findWordlePosts() {
 }
 
 async function setupGameUI(oauthSession) {
-    console.log("Setting up Agent with session:", oauthSession);
+    console.log("Setting up Agent. Session data:", oauthSession);
 
-    try {
-        // 1. Explicitly get the service URL from the session
-        // Some PDSs use 'pds', some use 'service' in the session object
-        const serviceUrl = oauthSession.pds || "https://bsky.social";
-
-        // 2. Initialize the agent with the string URL
-        agent = new BskyAgent({ service: serviceUrl });
-        
-        // 3. Manually attach the session data to the agent
-        // This avoids the 'resumeSession' check but gives the agent the tokens it needs
-        agent.session = oauthSession;
-
-        // 4. Toggle UI
-        document.getElementById("login-section").style.display = "none";
-        document.getElementById("game-section").style.display = "block";
-        document.getElementById("user-info").innerText = "Fetching your profile...";
-
-        // 5. Run your data calls
-        await fetchMyProfile();
-        
-    } catch (err) {
-        console.error("Agent setup failed:", err);
-        document.getElementById("status").innerText = "Agent Error: " + err.message;
+    // 1. First, check if the session already has an agent ready to go (The "Easy" Way)
+    if (oauthSession.agent instanceof BskyAgent) {
+        agent = oauthSession.agent;
+        console.log("Using pre-configured agent from session.");
+    } else {
+        // 2. If not, try to construct it manually (The "Fallback" Way)
+        try {
+            agent = new BskyAgent(oauthSession);
+            console.log("Constructed new BskyAgent from session.");
+        } catch (e) {
+            console.warn("Constructor failed, attempting direct property access.");
+            // 3. Final 'hail mary' if the constructor is being picky about types
+            agent = oauthSession.agent; 
+        }
     }
+
+    if (!agent) {
+        throw new Error("Could not initialize BskyAgent from OAuth session.");
+    }
+
+    // Toggle UI
+    document.getElementById("login-section").style.display = "none";
+    document.getElementById("game-section").style.display = "block";
+    document.getElementById("user-info").innerText = "Success! Fetching profile...";
+
+    await fetchMyProfile();
+    findWordlePosts();
 }
 
 async function login() {
