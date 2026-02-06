@@ -1,5 +1,5 @@
-import { BrowserOAuthClient } from "https://esm.sh/@atproto/oauth-client-browser@0.2.0?bundle";
-import { BskyAgent } from "https://esm.sh/@atproto/api@0.13.0?bundle";
+import { BrowserOAuthClient } from "https://esm.sh/@atproto/oauth-client-browser@0.3.0?bundle";
+import { Agent } from "https://esm.sh/@atproto/api@0.18.20?bundle";
 
 // Since we are hosting on the same domain, we point to our local metadata
 const METADATA_URL = "https://zomega.github.io/atproto-sandbox/client-metadata.json";
@@ -70,34 +70,19 @@ async function findWordlePosts() {
 }
 
 async function setupGameUI(oauthSession) {
-    console.log("Setting up Agent. Session data:", oauthSession);
+    console.log("Initializing modern Agent...");
 
-    // 1. First, check if the session already has an agent ready to go (The "Easy" Way)
-    if (oauthSession.agent instanceof BskyAgent) {
-        agent = oauthSession.agent;
-        console.log("Using pre-configured agent from session.");
-    } else {
-        // 2. If not, try to construct it manually (The "Fallback" Way)
-        try {
-            agent = new BskyAgent(oauthSession);
-            console.log("Constructed new BskyAgent from session.");
-        } catch (e) {
-            console.warn("Constructor failed, attempting direct property access.");
-            // 3. Final 'hail mary' if the constructor is being picky about types
-            agent = oauthSession.agent; 
-        }
-    }
-
-    if (!agent) {
-        throw new Error("Could not initialize BskyAgent from OAuth session.");
-    }
+    // In 0.18+, the base 'Agent' class is designed to accept an OAuth session
+    // It automatically handles the DPoP signatures for you.
+    agent = new Agent(oauthSession);
 
     // Toggle UI
     document.getElementById("login-section").style.display = "none";
     document.getElementById("game-section").style.display = "block";
     document.getElementById("user-info").innerText = "Success! Fetching profile...";
 
-    await fetchMyProfile();
+    // Fetch Profile
+    await fetchMyProfile(oauthSession.sub);
     findWordlePosts();
 }
 
