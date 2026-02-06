@@ -1,9 +1,9 @@
 import { BrowserOAuthClient } from "https://esm.sh/@atproto/oauth-client-browser@0.3.0?bundle";
 import { Agent } from "https://esm.sh/@atproto/api@0.18.20?bundle";
 
-// Since we are hosting on the same domain, we point to our local metadata
 const METADATA_URL = "https://zomega.github.io/atproto-sandbox/client-metadata.json";
 
+// We keep these global to access them for debugging
 let client;
 let agent;
 
@@ -12,17 +12,15 @@ async function init() {
     console.log("App initializing...");
 
     try {
-        // 1. Fetch metadata
         const response = await fetch(METADATA_URL);
         const metadata = await response.json();
 
-        // 2. Initialize Client
         client = new BrowserOAuthClient({
             handleResolver: "https://bsky.social",
             clientMetadata: metadata 
         });
 
-        // 3. Check for session (handles the redirect automatically)
+        // This handles the redirect return automatically
         const result = await client.init();
 
         if (result?.session) {
@@ -37,61 +35,54 @@ async function init() {
     }
 }
 
-async function fetchMyProfile() {
-    try {
-        // 'getProfile' is the standard way to get user details
-        const response = await agent.getProfile({ actor: agent.session.did });
-        const profile = response.data;
-
-        console.log("Profile fetched:", profile);
-
-        // Update the UI with your actual display name and avatar
-        document.getElementById("user-info").innerHTML = `
-            <img src="${profile.avatar}" style="width:50px; border-radius:50%; vertical-align:middle; margin-right:10px;">
-            <strong>${profile.displayName || profile.handle}</strong>
-        `;
-    } catch (err) {
-        console.error("Failed to fetch profile:", err);
-    }
-}
-
-async function findWordlePosts() {
-    try {
-        // Search for the classic Wordle grid pattern
-        const response = await agent.app.bsky.feed.searchPosts({
-            q: "Wordle 🟩",
-            limit: 5
-        });
-
-        console.log("Recent Wordle posts:", response.data.posts);
-    } catch (err) {
-        console.error("Search failed:", err);
-    }
-}
-
 async function setupGameUI(oauthSession) {
-    console.log("Initializing modern Agent...");
+    console.log("Initializing Agent with valid session...");
 
-    // In 0.18+, the base 'Agent' class is designed to accept an OAuth session
-    // It automatically handles the DPoP signatures for you.
+    // 1. The Correct Way to Init:
+    // The Agent constructor in 0.18+ is smart enough to take the OAuth session directly.
     agent = new Agent(oauthSession);
 
     // Toggle UI
     document.getElementById("login-section").style.display = "none";
     document.getElementById("game-section").style.display = "block";
-    document.getElementById("user-info").innerText = "Success! Fetching profile...";
+    document.getElementById("user-info").innerText = "Authenticated. Loading profile...";
 
-    // Fetch Profile
+    // 2. The Fix:
+    // The agent doesn't have 'agent.session', so we pass the DID from the oauthSession.
     await fetchMyProfile(oauthSession.sub);
-    findWordlePosts();
+}
+
+async function fetchMyProfile(did) {
+    try {
+        console.log("Fetching profile for:", did);
+        
+        // We use the agent to make the authenticated call
+        const response = await agent.getProfile({ actor: did });
+        const profile = response.data;
+
+        console.log("Profile fetched:", profile);
+
+        document.getElementById("user-info").innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <img src="${profile.avatar}" style="width:50px; height:50px; border-radius:50%; border: 2px solid var(--accent-color);">
+                <div style="text-align: left;">
+                    <div style="font-weight: bold;">${profile.displayName || profile.handle}</div>
+                    <div style="font-size: 0.8em; opacity: 0.8;">@${profile.handle}</div>
+                </div>
+            </div>
+        `;
+    } catch (err) {
+        console.error("Failed to fetch profile:", err);
+        // This gives us the exact error from the server (e.g. 401, 403)
+        document.getElementById("user-info").innerText = "Error: " + err.message;
+    }
 }
 
 async function login() {
     const handle = document.getElementById('handle').value.trim();
-    if (!handle) return alert("Enter your handle (e.g., will.bsky.social)");
+    if (!handle) return alert("Enter your handle");
 
     try {
-        // Redirect to PDS
         const { url } = await client.signIn(handle, {
             scope: "atproto",
             ui_locales: 'en',
@@ -103,7 +94,6 @@ async function login() {
     }
 }
 
-// Bind Events
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("login-btn").addEventListener("click", login);
     init();
