@@ -168,3 +168,7 @@ async function readTestData() {
         }
     }
 }
+
+// Expose the test functions for console access during development.
+window.saveTestData = saveTestData;
+window.readTestData = readTestData;
