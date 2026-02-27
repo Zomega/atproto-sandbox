@@ -125,10 +125,10 @@ async function saveTestData() {
         // 'putRecord' is the Upsert command
         await agent.com.atproto.repo.putRecord({
             repo: did,
-            collection: "com.willoursler.test",
+            collection: "com.zomega.test",
             rkey: "singleton", // Using a fixed key prevents multiple entries
             record: {
-                $type: "com.willoursler.test",
+                $type: "com.zomega.test",
                 message: "Hello from ATProto Wordle Sandbox!",
                 updatedAt: now,
                 developer: "Will Oursler"
@@ -149,7 +149,7 @@ async function readTestData() {
         
         const response = await agent.com.atproto.repo.getRecord({
             repo: did,
-            collection: "com.willoursler.test",
+            collection: "com.zomega.test",
             rkey: "singleton"
         });
 
