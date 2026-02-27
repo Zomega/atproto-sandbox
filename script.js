@@ -113,3 +113,58 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("login-btn").addEventListener("click", login);
     init();
 });
+
+// 1. Write or Update a specific record
+async function saveTestData() {
+    try {
+        const did = oauthSession.sub;
+        const now = new Date().toISOString();
+
+        console.log("Saving test data...");
+
+        // 'putRecord' is the Upsert command
+        await agent.com.atproto.repo.putRecord({
+            repo: did,
+            collection: "com.willoursler.test",
+            rkey: "singleton", // Using a fixed key prevents multiple entries
+            record: {
+                $type: "com.willoursler.test",
+                message: "Hello from ATProto Wordle Sandbox!",
+                updatedAt: now,
+                developer: "Will Oursler"
+            }
+        });
+
+        alert("Record saved/updated successfully!");
+        await readTestData(); // Refresh the view
+    } catch (err) {
+        console.error("Save failed:", err);
+    }
+}
+
+// 2. Read that specific record back
+async function readTestData() {
+    try {
+        const did = oauthSession.sub;
+        
+        const response = await agent.com.atproto.repo.getRecord({
+            repo: did,
+            collection: "com.willoursler.test",
+            rkey: "singleton"
+        });
+
+        console.log("Record retrieved:", response.data.value);
+        
+        // Update the UI with the result
+        const val = response.data.value;
+        document.getElementById("status").innerText = 
+            `Last updated: ${new Date(val.updatedAt).toLocaleTimeString()}`;
+            
+    } catch (err) {
+        if (err.message.includes("Could not find record")) {
+            console.log("No record found yet.");
+        } else {
+            console.error("Read failed:", err);
+        }
+    }
+}
